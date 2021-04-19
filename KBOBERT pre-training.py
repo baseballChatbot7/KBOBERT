@@ -226,12 +226,12 @@ if __name__ == "__main__":
         )
 
     training_args = TrainingArguments(
-        output_dir='./KBOBERT/model_output',
+        output_dir='./model_output',
         overwrite_output_dir=True,
         num_train_epochs=10,
         per_device_train_batch_size=1,
         save_steps=10000,
-        save_total_limit=2,
+        save_total_limit=5,
         logging_steps=10000
         )
 
