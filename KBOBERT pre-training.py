@@ -174,7 +174,7 @@ if __name__ == "__main__":
         )
 
     wp_tokenizer.train(
-        files='/opt/ml/code/KBOBERT/NEWS.txt',
+        files='/opt/ml/code/KBOBERT/KBOBERT Data.txt',
         vocab_size=32000,
         min_frequency=2,
         show_progress=True,
@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
     tokenizer = BertTokenizerFast(
         vocab_file="/opt/ml/code/KBOBERT/vocab.txt",
-        max_len=64,
+        max_len=512,
         do_lower_case=False,
         )
 
@@ -203,7 +203,7 @@ if __name__ == "__main__":
         hidden_act="gelu",
         hidden_dropout_prob=0.1,
         attention_probs_dropout_prob=0.1,
-        max_position_embeddings=128,
+        max_position_embeddings=512,
         type_vocab_size=2,
         pad_token_id=0,
         position_embedding_type="absolute"
@@ -212,9 +212,18 @@ if __name__ == "__main__":
     model = BertForPreTraining(config=config)
     model.num_parameters()
 
-    dataset = TextDatasetForNextSentencePrediction(
+    train_dataset = TextDatasetForNextSentencePrediction(
         tokenizer=tokenizer,
-        file_path='/opt/ml/code/KBOBERT/NEWS.txt',
+        file_path='/opt/ml/code/KBOBERT/KBOBERT Data.txt',
+        block_size=128,
+        overwrite_cache=False,
+        short_seq_probability=0.1,
+        nsp_probability=0.5,
+        )
+
+    eval_dataset = TextDatasetForNextSentencePrediction(
+        tokenizer=tokenizer,
+        file_path='/opt/ml/code/KBOBERT/wiki_20190620_small.txt',
         block_size=128,
         overwrite_cache=False,
         short_seq_probability=0.1,
@@ -229,17 +238,24 @@ if __name__ == "__main__":
         output_dir='./model_output',
         overwrite_output_dir=True,
         num_train_epochs=10,
-        per_device_train_batch_size=1,
+        learning_rate=5e-5,
+        per_device_train_batch_size=32,
+        per_device_eval_batch_size=32,
+        evaluation_strategy='steps',
+        eval_steps=10000,
+        warmup_steps=10000,
+        weight_decay=0.01,
+        dataloader_num_workers=4,
         save_steps=10000,
-        save_total_limit=5,
-        logging_steps=10000
+        save_total_limit=3,
         )
 
     trainer = Trainer(
         model=model,
         args=training_args,
         data_collator=data_collator,
-        train_dataset=dataset
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset
         )
 
     trainer.train()
