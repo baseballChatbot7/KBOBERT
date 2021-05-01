@@ -19,6 +19,12 @@ for num in tqdm(range(len(df))):
 
 news = '\n\n'.join(news)
 
-file = open('/opt/ml/code/KBOBERT/NEWS.txt', 'w')
-file.write(news)
+f = open(r'/opt/ml/code/KBOBERT/wiki_20190620.txt')
+wiki = f.read()
+f.close()
+
+data = wiki + '\n\n' + news
+
+file = open('/opt/ml/code/KBOBERT/KBOBERT Data.txt', 'w')
+file.write(data)
 file.close()
