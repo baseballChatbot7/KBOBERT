@@ -4,7 +4,7 @@ from tqdm import tqdm
 from selenium import webdriver
 import time
 
-def NEWS_Crawler():
+def KBO_NEWS_Crawler():
     driver = webdriver.Chrome('./chromedriver')
 
     df = pd.DataFrame(columns = ['title', 'content'])
@@ -25,9 +25,9 @@ def NEWS_Crawler():
 
     df = df.dropna()
 
-    df.to_csv('./NEWS.csv', index=False, encoding='utf-8-sig')
+    df.to_csv('./KBO_NEWS.csv', index=False, encoding='utf-8-sig')
 
     driver.close()
 
 if __name__ == "__main__":
-    NEWS_Crawler()
+    KBO_NEWS_Crawler()
