@@ -174,7 +174,7 @@ if __name__ == "__main__":
         )
 
     wp_tokenizer.train(
-        files='/opt/ml/code/KBOBERT/KBOBERT Data.txt',
+        files='/opt/ml/code/KBOBERT/KBOBERT_Data.txt',
         vocab_size=32000,
         min_frequency=2,
         show_progress=True,
@@ -214,21 +214,21 @@ if __name__ == "__main__":
 
     train_dataset = TextDatasetForNextSentencePrediction(
         tokenizer=tokenizer,
-        file_path='/opt/ml/code/KBOBERT/KBOBERT Data.txt',
-        block_size=128,
+        file_path='/opt/ml/code/KBOBERT/KBOBERT_Data.txt',
+        block_size=512,
         overwrite_cache=False,
         short_seq_probability=0.1,
         nsp_probability=0.5,
         )
 
-    eval_dataset = TextDatasetForNextSentencePrediction(
-        tokenizer=tokenizer,
-        file_path='/opt/ml/code/KBOBERT/wiki_20190620_small.txt',
-        block_size=128,
-        overwrite_cache=False,
-        short_seq_probability=0.1,
-        nsp_probability=0.5,
-        )
+    # eval_dataset = TextDatasetForNextSentencePrediction(
+    #     tokenizer=tokenizer,
+    #     file_path='/opt/ml/code/KBOBERT/wiki_20190620_small.txt',
+    #     block_size=512,
+    #     overwrite_cache=False,
+    #     short_seq_probability=0.1,
+    #     nsp_probability=0.5,
+    #     )
 
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer, mlm=True, mlm_probability=0.15
@@ -237,15 +237,16 @@ if __name__ == "__main__":
     training_args = TrainingArguments(
         output_dir='./model_output',
         overwrite_output_dir=True,
-        num_train_epochs=10,
+        num_train_epochs=256,
         learning_rate=5e-5,
-        per_device_train_batch_size=32,
-        per_device_eval_batch_size=32,
-        evaluation_strategy='steps',
-        eval_steps=10000,
+        per_device_train_batch_size=64,
+        # per_device_eval_batch_size=64,
+        # evaluation_strategy='steps',
+        # eval_steps=10000,
         warmup_steps=10000,
         weight_decay=0.01,
         dataloader_num_workers=4,
+        fp16=True,
         save_steps=10000,
         save_total_limit=3,
         )
@@ -255,7 +256,7 @@ if __name__ == "__main__":
         args=training_args,
         data_collator=data_collator,
         train_dataset=train_dataset,
-        eval_dataset=eval_dataset
+        # eval_dataset=eval_dataset
         )
 
     trainer.train()
