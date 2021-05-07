@@ -1,10 +1,10 @@
 from transformers import BertForMaskedLM, BertTokenizerFast, pipeline
 
-model = BertForMaskedLM.from_pretrained('/opt/ml/code/KBOBERT/model_output')
+model = BertForMaskedLM.from_pretrained('/opt/ml/code/KBOBERT/model_output/checkpoint-130000')
 
 tokenizer = BertTokenizerFast(
     vocab_file="/opt/ml/code/KBOBERT/vocab.txt",
-    max_len=64,
+    max_len=512,
     do_lower_case=False,
 )
 
